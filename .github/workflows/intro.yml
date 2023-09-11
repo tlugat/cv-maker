@@ -3,9 +3,9 @@ name: Hello world
 on: 
   push:
     
-  jobs:
-    hello-world: 
-      runs-on: ubuntu-latest
-      steps:
-        - uses: actions/checkout@v4
-        - run: echo "Hello world"
+jobs:
+  hello-world: 
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: echo "Hello world"
