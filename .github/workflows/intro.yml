@@ -4,8 +4,41 @@ on:
   push:
     
 jobs:
-  hello-world: 
+  build: 
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: echo "Hello world"
+
+      - name: Show node version
+        run: node --version
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2.4.0
+        with:
+          version: 8
+          run_install: false
+
+      - name: Get pnpm store directory
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
+      - name: Setup pnpm cache
+        uses: actions/cache@v3
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+            
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Build the app
+        run: pnpm run build
+
+      - name: Test the connection
+        run: | 
+          pnpm run preview &
+          sleep 5
+          curl -I http://localhost:4173
